@@ -13,14 +13,40 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'tblusers';
+
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'FullName',
+        'EmailId',
+        'Password',
+        'ContactNo',
+        'dob',
+        'Address',
+        'City',
+        'Country',
     ];
 
     /**
@@ -29,7 +55,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
+        'Password',
         'remember_token',
     ];
 
@@ -41,8 +67,39 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'RegDate' => 'datetime',
+            'UpdationDate' => 'datetime',
+            'Password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the name of the unique identifier for the user.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'EmailId';
+    }
+
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->Password;
+    }
+
+    /**
+     * Get the column name for the "remember me" token.
+     *
+     * @return string
+     */
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
     }
 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\UserLegacy;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +20,7 @@ class AuthController extends Controller
             'password' => 'required|min:6'
         ]);
 
-        $user = UserLegacy::create([
+        $user = User::create([
             'FullName' => $r->fullname,
             'EmailId' => $r->emailid,
             'ContactNo' => $r->mobileno ?? null,
@@ -33,7 +35,7 @@ class AuthController extends Controller
     public function login(Request $r)
     {
         $r->validate(['email' => 'required|email','password' => 'required']);
-        $user = UserLegacy::where('EmailId', $r->email)->first();
+        $user = User::where('EmailId', $r->email)->first();
         if ($user) {
             $stored = $user->Password;
             $input = $r->password;
@@ -65,8 +67,8 @@ class AuthController extends Controller
             }
 
             if ($ok) {
-                // naive login: set session (you should use Laravel Auth scaffolding)
-                session(['login' => $user->EmailId, 'fname' => $user->FullName]);
+                // Use Laravel's built-in authentication
+                Auth::login($user);
                 $r->session()->flash('msg', 'Logged in successfully');
                 return redirect()->back();
             }
@@ -80,5 +82,14 @@ class AuthController extends Controller
         // placeholder: implement reset flow with tokens/emails
         $r->session()->flash('error', 'Password reset not implemented yet.');
         return redirect()->back();
+    }
+
+    public function logout(Request $r)
+    {
+        Auth::logout();
+        $r->session()->invalidate();
+        $r->session()->regenerateToken();
+        $r->session()->flash('msg', 'Logged out successfully.');
+        return redirect('/');
     }
 }

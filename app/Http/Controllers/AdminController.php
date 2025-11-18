@@ -31,12 +31,66 @@ class AdminController extends Controller
         if(!session('alogin')){
             return redirect('/admin');
         }
-        // gather some basic stats
+        // gather comprehensive stats for dashboard
         $vehiclesCount = \App\Models\Vehicle::count();
         $bookingsCount = \App\Models\Booking::count();
         $usersCount = \App\Models\UserLegacy::count();
+        $brandsCount = \App\Models\Brand::count();
+        $subscribersCount = \App\Models\Subscriber::count();
+        $queriesCount = \App\Models\ContactQuery::count();
+        $testimonialsCount = \App\Models\Testimonial::count();
         $recentBookings = \App\Models\Booking::with('vehicle')->orderBy('id','desc')->limit(10)->get();
 
-        return view('admin.dashboard', compact('vehiclesCount','bookingsCount','usersCount','recentBookings'));
+        return view('admin.dashboard', compact(
+            'vehiclesCount','bookingsCount','usersCount','brandsCount',
+            'subscribersCount','queriesCount','testimonialsCount','recentBookings'
+        ));
+    }
+
+    public function showChangePassword()
+    {
+        if(!session('alogin')){
+            return redirect('/admin');
+        }
+        return view('admin.change-password');
+    }
+
+    public function changePassword(Request $request)
+    {
+        if(!session('alogin')){
+            return redirect('/admin');
+        }
+
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed'
+        ]);
+
+        $username = session('alogin');
+        $currentPasswordMd5 = md5($request->current_password);
+        $newPasswordMd5 = md5($request->new_password);
+
+        // Check current password
+        $admin = DB::table('admin')
+            ->where('UserName', $username)
+            ->where('Password', $currentPasswordMd5)
+            ->first();
+
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Current password is incorrect.');
+        }
+
+        // Update password
+        DB::table('admin')
+            ->where('UserName', $username)
+            ->update(['Password' => $newPasswordMd5]);
+
+        return redirect()->back()->with('msg', 'Password changed successfully.');
+    }
+
+    public function logout()
+    {
+        session()->forget('alogin');
+        return redirect('/admin')->with('msg', 'Logged out successfully.');
     }
 }

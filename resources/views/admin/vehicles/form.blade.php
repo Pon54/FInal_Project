@@ -72,15 +72,45 @@
 
           <!-- Upload Images -->
           <div class="form-group">
-            <label>Upload Images</label>
+            <label>Upload Vehicle Images</label>
             <div class="row">
-              <div class="col-md-3"><label>Image 1 *</label><input type="file" name="Vimage1" class="form-control-file"></div>
-              <div class="col-md-3"><label>Image 2</label><input type="file" name="Vimage2" class="form-control-file"></div>
-              <div class="col-md-3"><label>Image 3</label><input type="file" name="Vimage3" class="form-control-file"></div>
-              <div class="col-md-3"><label>Image 4</label><input type="file" name="Vimage4" class="form-control-file"></div>
+              <div class="col-md-3">
+                <label>Image 1 * (Main)</label>
+                <input type="file" name="Vimage1" class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                @if(isset($vehicle) && $vehicle->Vimage1)
+                  <small class="text-success">Current: {{ $vehicle->Vimage1 }}</small>
+                @endif
+              </div>
+              <div class="col-md-3">
+                <label>Image 2</label>
+                <input type="file" name="Vimage2" class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                @if(isset($vehicle) && $vehicle->Vimage2)
+                  <small class="text-success">Current: {{ $vehicle->Vimage2 }}</small>
+                @endif
+              </div>
+              <div class="col-md-3">
+                <label>Image 3</label>
+                <input type="file" name="Vimage3" class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                @if(isset($vehicle) && $vehicle->Vimage3)
+                  <small class="text-success">Current: {{ $vehicle->Vimage3 }}</small>
+                @endif
+              </div>
+              <div class="col-md-3">
+                <label>Image 4</label>
+                <input type="file" name="Vimage4" class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                @if(isset($vehicle) && $vehicle->Vimage4)
+                  <small class="text-success">Current: {{ $vehicle->Vimage4 }}</small>
+                @endif
+              </div>
             </div>
             <div class="row mt-2">
-              <div class="col-md-3"><label>Image 5</label><input type="file" name="Vimage5" class="form-control-file"></div>
+              <div class="col-md-3">
+                <label>Image 5</label>
+                <input type="file" name="Vimage5" class="form-control-file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                @if(isset($vehicle) && $vehicle->Vimage5)
+                  <small class="text-success">Current: {{ $vehicle->Vimage5 }}</small>
+                @endif
+              </div>
             </div>
           </div>
 
@@ -93,17 +123,27 @@
             <div class="panel-body">
               @php
                 $accessories = [
-                  'Air Conditioner','Power Steering','CD Player','Power Door Locks','Driver Airbag','Central Locking',
-                  'AntiLock Braking System','Passenger Airbag','Crash Sensor','Brake Assist','Power Windows','Leather Seats'
+                  'AirConditioner' => 'Air Conditioner',
+                  'PowerSteering' => 'Power Steering', 
+                  'CDPlayer' => 'CD Player',
+                  'PowerDoorLocks' => 'Power Door Locks',
+                  'DriverAirbag' => 'Driver Airbag',
+                  'CentralLocking' => 'Central Locking',
+                  'AntiLockBrakingSystem' => 'AntiLock Braking System',
+                  'PassengerAirbag' => 'Passenger Airbag',
+                  'CrashSensor' => 'Crash Sensor',
+                  'BrakeAssist' => 'Brake Assist',
+                  'PowerWindows' => 'Power Windows',
+                  'LeatherSeats' => 'Leather Seats'
                 ];
               @endphp
               <div class="row">
-                @foreach($accessories as $acc)
+                @foreach($accessories as $field => $label)
                   <div class="col-md-6">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="Accessories[]" value="{{ $acc }}" id="acc_{{ md5($acc) }}"
-                        {{ in_array($acc, old('Accessories', $vehicleAccessories ?? [])) ? 'checked' : '' }}>
-                      <label class="form-check-label" for="acc_{{ md5($acc) }}">{{ $acc }}</label>
+                      <input class="form-check-input" type="checkbox" name="{{ $field }}" value="1" id="acc_{{ $field }}"
+                        {{ old($field, isset($vehicle) && $vehicle->$field ? 1 : 0) ? 'checked' : '' }}>
+                      <label class="form-check-label" for="acc_{{ $field }}">{{ $label }}</label>
                     </div>
                   </div>
                 @endforeach

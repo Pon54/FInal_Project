@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ContactQueryController as AdminContactQueryController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Admin\SubscriberController as AdminSubscriberController;
+use App\Http\Controllers\Admin\ContactInfoController as AdminContactInfoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,7 @@ Route::get('/car-listing', [LegacyController::class, 'search']);
 Route::get('/car-listing.php', function () { return redirect('/car-listing', 301); });
 
 Route::get('/contact-us', [LegacyController::class, 'contact']);
+Route::post('/contact-us', [ContactController::class, 'contact']);
 Route::post('/contact', [ContactController::class, 'contact']);
 Route::post('/subscribe', [ContactController::class, 'subscribe']);
 
@@ -45,6 +47,17 @@ Route::get('/page', [PageController::class, 'show']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot', [AuthController::class, 'forgot']);
+Route::get('/logout', [AuthController::class, 'logout']);
+
+// User profile routes (protected)
+Route::get('/profile', [LegacyController::class, 'profile']);
+Route::post('/profile', [LegacyController::class, 'updateProfile']);
+Route::get('/update-password', [LegacyController::class, 'showUpdatePassword']);
+Route::post('/update-password', [LegacyController::class, 'updatePassword']);
+Route::get('/my-booking', [LegacyController::class, 'myBooking']);
+Route::get('/post-testimonial', [LegacyController::class, 'showPostTestimonial']);
+Route::post('/post-testimonial', [LegacyController::class, 'postTestimonial']);
+Route::get('/my-testimonials', [LegacyController::class, 'myTestimonials']);
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +81,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // protected admin pages
     Route::middleware([AdminMiddleware::class])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/logout', function () { session()->forget('alogin'); return redirect()->route('admin.login'); })->name('logout');
+        Route::get('/change-password', [AdminController::class, 'showChangePassword'])->name('change-password');
+        Route::post('/change-password', [AdminController::class, 'changePassword'])->name('change-password');
+        Route::get('/logout', [AdminController::class, 'logout'])->name('logout');
 
         // diagnostics
         Route::get('/diagnostics/images', [AdminDiagnosticsController::class, 'images'])->name('diagnostics.images');
@@ -110,7 +125,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/reg-users/{id}', [AdminUserController::class,'show'])->name('users.show');
     Route::delete('/reg-users/{id}', [AdminUserController::class,'destroy'])->name('users.destroy');
 
+    // Contact Queries
     Route::get('/manage-conactusquery', [AdminContactQueryController::class,'index'])->name('contactqueries.index');
+    Route::get('/manage-conactusquery/{id}', [AdminContactQueryController::class,'show'])->name('contactqueries.show');
+    Route::post('/manage-conactusquery/reply', [AdminContactQueryController::class,'reply'])->name('contactqueries.reply');
+    Route::post('/manage-conactusquery/{id}/read', [AdminContactQueryController::class,'markAsRead'])->name('contactqueries.markread');
+    Route::delete('/manage-conactusquery/{id}', [AdminContactQueryController::class,'destroy'])->name('contactqueries.destroy');
 
     // Testimonials (approve/delete)
     Route::get('/testimonials', [AdminTestimonialController::class,'index'])->name('testimonials.index');
@@ -120,5 +140,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Subscribers
     Route::get('/manage-subscribers', [AdminSubscriberController::class,'index'])->name('subscribers.index');
     Route::delete('/manage-subscribers/{id}', [AdminSubscriberController::class,'destroy'])->name('subscribers.destroy');
+
+    // Contact Info Management
+    Route::get('/contact-info', [AdminContactInfoController::class,'edit'])->name('contact-info.edit');
+    Route::put('/contact-info', [AdminContactInfoController::class,'update'])->name('contact-info.update');
     });
 });

@@ -3,6 +3,7 @@
 @section('title', $page->PageName ?? 'Page')
 
 @section('content')
+
 <section class="page-header aboutus_page">
   <div class="container">
     <div class="page-header_wrap">
@@ -15,6 +16,7 @@
       </ul>
     </div>
   </div>
+  <!-- Dark Overlay-->
   <div class="dark-overlay"></div>
 </section>
 <section class="about_us section-padding">
@@ -25,4 +27,5 @@
     </div>
   </div>
 </section>
+
 @endsection
